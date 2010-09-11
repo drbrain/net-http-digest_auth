@@ -1,0 +1,7 @@
+.autotest
+History.txt
+Manifest.txt
+README.txt
+Rakefile
+lib/net/http/digest_auth.rb
+test/test_net_http_digest_auth.rb
