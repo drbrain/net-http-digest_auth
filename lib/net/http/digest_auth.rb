@@ -42,7 +42,7 @@ class Net::HTTP::DigestAuth
   def auth_header uri, www_authenticate, method, iis = false
     @nonce_count += 1
 
-    user = CGI.unescape uri.user
+    user     = CGI.unescape uri.user
     password = CGI.unescape uri.password
 
     www_authenticate =~ /^(\w+) (.*)/
@@ -50,31 +50,32 @@ class Net::HTTP::DigestAuth
     params = {}
     $2.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }
 
-    a_1 = "#{user}:#{params['realm']}:#{password}"
-    a_2 = "#{method}:#{uri.path}"
+    a_1 = Digest::MD5.hexdigest "#{user}:#{params['realm']}:#{password}"
+    a_2 = Digest::MD5.hexdigest "#{method}:#{uri.request_uri}"
 
-    request_digest = []
-    request_digest << Digest::MD5.hexdigest(a_1)
-    request_digest << params['nonce']
-    request_digest << ('%08x' % @nonce_count)
-    request_digest << @cnonce
-    request_digest << params['qop']
-    request_digest << Digest::MD5.hexdigest(a_2)
-    request_digest = request_digest.join ':'
+    request_digest = [
+      a_1,
+      params['nonce'],
+      ('%08x' % @nonce_count),
+      @cnonce,
+      params['qop'],
+      a_2
+    ].join ':'
 
-    header = []
-    header << "Digest username=\"#{user}\""
-    header << "realm=\"#{params['realm']}\""
-    if iis then
-      header << "qop=\"#{params['qop']}\""
-    else
-      header << "qop=#{params['qop']}"
-    end
-    header << "uri=\"#{uri.path}\""
-    header << "nonce=\"#{params['nonce']}\""
-    header << "nc=#{'%08x' % @nonce_count}"
-    header << "cnonce=\"#{@cnonce}\""
-    header << "response=\"#{Digest::MD5.hexdigest request_digest}\""
+    header = [
+      "Digest username=\"#{user}\"",
+      "realm=\"#{params['realm']}\"",
+      if iis then
+        "qop=\"#{params['qop']}\""
+      else
+        "qop=#{params['qop']}"
+      end,
+      "uri=\"#{uri.request_uri}\"",
+      "nonce=\"#{params['nonce']}\"",
+      "nc=#{'%08x' % @nonce_count}",
+      "cnonce=\"#{@cnonce}\"",
+      "response=\"#{Digest::MD5.hexdigest request_digest}\""
+    ]
 
     header.join ', '
   end
