@@ -6,6 +6,30 @@ require 'cgi'
 # An implementation of RFC 2617 Digest Access Authentication.
 #
 # http://www.rfc-editor.org/rfc/rfc2617.txt
+#
+# Here is a sample usage of DigestAuth on Net::HTTP:
+#
+#   require 'uri'
+#   require 'net/http'
+#   require 'net/http/digest_auth'
+#
+#   uri = URI.parse 'http://localhost:8000/'
+#   uri.user = 'username'
+#   uri.password = 'password'
+#
+#   h = Net::HTTP.new uri.host, uri.port
+#
+#   req = Net::HTTP::Get.new uri.request_uri
+#
+#   res = h.request req
+#
+#   digest_auth = Net::HTTP::DigestAuth.new
+#   auth = digest_auth.auth_header uri, res['www-authenticate'], 'GET'
+#
+#   req = Net::HTTP::Get.new uri.request_uri
+#   req.add_field 'Authorization', auth
+#
+#   res = h.request req
 
 class Net::HTTP::DigestAuth
 
