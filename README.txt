@@ -1,6 +1,7 @@
 = net-http-digest_auth
 
 * http://github.com/drbrain/net-http-digest_auth
+* http://seattlerb.rubyforge.org/net-http-digest_auth
 * http://www.rfc-editor.org/rfc/rfc2617.txt
 
 == DESCRIPTION:
