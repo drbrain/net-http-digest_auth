@@ -26,8 +26,8 @@ class Net::HTTP::DigestAuth
   end
 
   ##
-  # Creates a digest auth header for +uri+ from +auth_header+ for HTTP method
-  # +method+.
+  # Creates a digest auth header for +uri+ from the +www_authenticate+ header
+  # for HTTP method +method+.
   #
   # The result of this method should be sent along with the HTTP request as
   # the "Authorization" header.  In Net::HTTP this will look like:
@@ -39,13 +39,13 @@ class Net::HTTP::DigestAuth
   # IIS servers handle the "qop" parameter of digest authentication
   # differently so you may need to set +iis+ to true for such servers.
 
-  def auth_header uri, auth_header, method, iis = false
+  def auth_header uri, www_authenticate, method, iis = false
     @nonce_count += 1
 
     user = CGI.unescape uri.user
     password = CGI.unescape uri.password
 
-    auth_header =~ /^(\w+) (.*)/
+    www_authenticate =~ /^(\w+) (.*)/
 
     params = {}
     $2.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }
