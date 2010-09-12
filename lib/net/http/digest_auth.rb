@@ -74,16 +74,16 @@ class Net::HTTP::DigestAuth
     params = {}
     $2.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }
 
-    a_1 = Digest::MD5.hexdigest "#{user}:#{params['realm']}:#{password}"
-    a_2 = Digest::MD5.hexdigest "#{method}:#{uri.request_uri}"
+    ha1 = Digest::MD5.hexdigest "#{user}:#{params['realm']}:#{password}"
+    ha2 = Digest::MD5.hexdigest "#{method}:#{uri.request_uri}"
 
     request_digest = [
-      a_1,
+      ha1,
       params['nonce'],
       ('%08x' % @nonce_count),
       @cnonce,
       params['qop'],
-      a_2
+      ha2
     ].join ':'
 
     header = [
@@ -98,8 +98,11 @@ class Net::HTTP::DigestAuth
       "nonce=\"#{params['nonce']}\"",
       "nc=#{'%08x' % @nonce_count}",
       "cnonce=\"#{@cnonce}\"",
-      "response=\"#{Digest::MD5.hexdigest request_digest}\""
-    ]
+      "response=\"#{Digest::MD5.hexdigest request_digest}\"",
+      if params.key? 'opaque' then
+        "opaque=\"#{params['opaque']}\""
+      end
+    ].compact
 
     header.join ', '
   end

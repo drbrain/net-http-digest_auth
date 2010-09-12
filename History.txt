@@ -1,3 +1,8 @@
+=== 1.0.1 
+
+* Bug fixes
+  * Support opaque per RFC 2617 3.2.1
+
 === 1.0 / 2010-09-10
 
 * Major enhancements
