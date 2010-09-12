@@ -1,5 +1,7 @@
-=== 1.0.1 
+=== 1.1
 
+* Minor enhancements
+  * Add support for SHA1, SHA2, SHA256, SHA384, SHA512, RMD160 algorithms
 * Bug fixes
   * Support opaque per RFC 2617 3.2.1
 

@@ -16,11 +16,7 @@ class TestNetHttpDigestAuth < MiniTest::Unit::TestCase
       'nonce="4107baa081a592a6021660200000cd6c5686ff5f579324402b374d83e2c9"'
     ].join ', '
 
-    @da = Net::HTTP::DigestAuth.new @cnonce
-  end
-
-  def test_auth_header
-    expected = [
+    @expected = [
       'Digest username="user"',
       'realm="www.example.com"',
       'qop=auth',
@@ -29,57 +25,59 @@ class TestNetHttpDigestAuth < MiniTest::Unit::TestCase
       'nc=00000000',
       'cnonce="9ea5ff3bd34554a4165bbdc1df91dcff"',
       'response="67be92a5e7b38d08679957db04f5da04"'
-    ].join ', '
+    ]
+
+    @da = Net::HTTP::DigestAuth.new @cnonce
+  end
+
+  def expected
+    @expected.join ', '
+  end
+
+  def test_auth_header
+    assert_equal expected, @da.auth_header(@uri, @header, 'GET')
+
+    @expected[5] = 'nc=00000001'
+    @expected[7] = 'response="1f5f0cd1588690c1303737f081c0b9bb"'
 
     assert_equal expected, @da.auth_header(@uri, @header, 'GET')
   end
 
   def test_auth_header_iis
-    expected = [
-      'Digest username="user"',
-      'realm="www.example.com"',
-      'qop="auth"',
-      'uri="/"',
-      'nonce="4107baa081a592a6021660200000cd6c5686ff5f579324402b374d83e2c9"',
-      'nc=00000000',
-      'cnonce="9ea5ff3bd34554a4165bbdc1df91dcff"',
-      'response="67be92a5e7b38d08679957db04f5da04"'
-    ].join ', '
+    @expected[2] = 'qop="auth"'
 
     assert_equal expected, @da.auth_header(@uri, @header, 'GET', true)
   end
 
   def test_auth_header_opaque
-    expected = [
-      'Digest username="user"',
-      'realm="www.example.com"',
-      'qop=auth',
-      'uri="/"',
-      'nonce="4107baa081a592a6021660200000cd6c5686ff5f579324402b374d83e2c9"',
-      'nc=00000000',
-      'cnonce="9ea5ff3bd34554a4165bbdc1df91dcff"',
-      'response="67be92a5e7b38d08679957db04f5da04"',
-      'opaque="5ccc069c403ebaf9f0171e9517f40e41"',
-    ].join ', '
-
-    @header << 'opaque="5ccc069c403ebaf9f0171e9517f40e41"'
+    @expected << 'opaque="5ccc069c403ebaf9f0171e9517f40e41"'
+    @header   << 'opaque="5ccc069c403ebaf9f0171e9517f40e41"'
 
     assert_equal expected, @da.auth_header(@uri, @header, 'GET')
   end
 
   def test_auth_header_post
-    expected = [
-      'Digest username="user"',
-      'realm="www.example.com"',
-      'qop=auth',
-      'uri="/"',
-      'nonce="4107baa081a592a6021660200000cd6c5686ff5f579324402b374d83e2c9"',
-      'nc=00000000',
-      'cnonce="9ea5ff3bd34554a4165bbdc1df91dcff"',
-      'response="d82219e1e5430b136bbae1670fa51d48"'
-    ].join ', '
+    @expected[7] = 'response="d82219e1e5430b136bbae1670fa51d48"'
 
     assert_equal expected, @da.auth_header(@uri, @header, 'POST')
+  end
+
+  def test_auth_header_sha1
+    @expected[7] = 'response="2cb62fc18f7b0ebdc34543f896bb77686b4115e4"'
+
+    @header << 'algorithm="SHA1"'
+
+    assert_equal expected, @da.auth_header(@uri, @header, 'GET')
+  end
+
+  def test_auth_header_unknown_algorithm
+    @header << 'algorithm="bogus"'
+
+    e = assert_raises Net::HTTP::DigestAuth::Error do
+      @da.auth_header @uri, @header, 'GET'
+    end
+    
+    assert_equal 'unknown algorithm "bogus"', e.message
   end
 
   def test_make_cnonce

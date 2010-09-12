@@ -34,6 +34,11 @@ require 'cgi'
 class Net::HTTP::DigestAuth
 
   ##
+  # DigestAuth error class
+
+  class Error < RuntimeError; end
+
+  ##
   # Version of Net::HTTP::DigestAuth you are using
 
   VERSION = '1.0'
@@ -74,8 +79,25 @@ class Net::HTTP::DigestAuth
     params = {}
     $2.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }
 
-    ha1 = Digest::MD5.hexdigest "#{user}:#{params['realm']}:#{password}"
-    ha2 = Digest::MD5.hexdigest "#{method}:#{uri.request_uri}"
+    if params['algorithm'] =~ /(.*?)(-sess)?$/
+      algorithm = case $1
+                  when 'MD5'    then Digest::MD5
+                  when 'SHA1'   then Digest::SHA1
+                  when 'SHA2'   then Digest::SHA2
+                  when 'SHA256' then Digest::SHA256
+                  when 'SHA384' then Digest::SHA384
+                  when 'SHA512' then Digest::SHA512
+                  when 'RMD160' then Digest::RMD160
+                  else raise Error, "unknown algorithm \"#{$1}\""
+                  end
+      sess = $2
+    else
+      algorithm = Digest::MD5
+      sess = false
+    end
+
+    ha1 = algorithm.hexdigest "#{user}:#{params['realm']}:#{password}"
+    ha2 = algorithm.hexdigest "#{method}:#{uri.request_uri}"
 
     request_digest = [
       ha1,
@@ -98,7 +120,7 @@ class Net::HTTP::DigestAuth
       "nonce=\"#{params['nonce']}\"",
       "nc=#{'%08x' % @nonce_count}",
       "cnonce=\"#{@cnonce}\"",
-      "response=\"#{Digest::MD5.hexdigest request_digest}\"",
+      "response=\"#{algorithm.hexdigest request_digest}\"",
       if params.key? 'opaque' then
         "opaque=\"#{params['opaque']}\""
       end
