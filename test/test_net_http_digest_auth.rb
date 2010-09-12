@@ -62,6 +62,14 @@ class TestNetHttpDigestAuth < MiniTest::Unit::TestCase
     assert_equal expected, @da.auth_header(@uri, @header, 'POST')
   end
 
+  def test_auth_header_sess
+    @header << 'algorithm="MD5-sess"'
+
+    @expected[7] = 'response="76d3ff10007496cee26c61f9d04c72a8"'
+
+    assert_equal expected, @da.auth_header(@uri, @header, 'GET')
+  end
+
   def test_auth_header_sha1
     @expected[7] = 'response="2cb62fc18f7b0ebdc34543f896bb77686b4115e4"'
 

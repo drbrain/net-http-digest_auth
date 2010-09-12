@@ -96,7 +96,16 @@ class Net::HTTP::DigestAuth
       sess = false
     end
 
-    ha1 = algorithm.hexdigest "#{user}:#{params['realm']}:#{password}"
+    a1 = if sess then
+           [ algorithm.hexdigest("#{user}:#{params['realm']}:#{password}"),
+             params['nonce'],
+             params['cnonce']
+           ].join ':'
+         else
+           "#{user}:#{params['realm']}:#{password}"
+         end
+
+    ha1 = algorithm.hexdigest a1
     ha2 = algorithm.hexdigest "#{method}:#{uri.request_uri}"
 
     request_digest = [
