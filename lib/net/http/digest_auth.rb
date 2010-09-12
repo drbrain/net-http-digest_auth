@@ -79,6 +79,8 @@ class Net::HTTP::DigestAuth
     params = {}
     $2.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }
 
+    qop = params['qop']
+
     if params['algorithm'] =~ /(.*?)(-sess)?$/
       algorithm = case $1
                   when 'MD5'    then Digest::MD5
@@ -108,28 +110,25 @@ class Net::HTTP::DigestAuth
     ha1 = algorithm.hexdigest a1
     ha2 = algorithm.hexdigest "#{method}:#{uri.request_uri}"
 
-    request_digest = [
-      ha1,
-      params['nonce'],
-      ('%08x' % @nonce_count),
-      @cnonce,
-      params['qop'],
-      ha2
-    ].join ':'
+    request_digest = [ha1, params['nonce']]
+    request_digest.push ('%08x' % @nonce_count), @cnonce, qop if qop
+    request_digest << ha2
+    request_digest = request_digest.join ':'
 
     header = [
       "Digest username=\"#{user}\"",
       "realm=\"#{params['realm']}\"",
-      if iis then
-        "qop=\"#{params['qop']}\""
+      if qop.nil? then
+      elsif iis then
+        "qop=\"#{qop}\""
       else
-        "qop=#{params['qop']}"
+        "qop=#{qop}"
       end,
       "uri=\"#{uri.request_uri}\"",
       "nonce=\"#{params['nonce']}\"",
       "nc=#{'%08x' % @nonce_count}",
       "cnonce=\"#{@cnonce}\"",
-      "response=\"#{algorithm.hexdigest request_digest}\"",
+      "response=\"#{algorithm.hexdigest(request_digest)[0, 32]}\"",
       if params.key? 'opaque' then
         "opaque=\"#{params['opaque']}\""
       end

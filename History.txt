@@ -5,6 +5,7 @@
 * Bug fixes
   * Support opaque per RFC 2617 3.2.1
   * Support MD5-sess per RFC 2617 3.2.2.2
+  * Support unspecified qop for RFC 2069 compatibility per RFC 2617 3.2.2.1
 
 === 1.0 / 2010-09-10
 

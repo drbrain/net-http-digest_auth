@@ -49,6 +49,15 @@ class TestNetHttpDigestAuth < MiniTest::Unit::TestCase
     assert_equal expected, @da.auth_header(@uri, @header, 'GET', true)
   end
 
+  def test_auth_header_no_qop
+    @header.sub! ' qop="auth",', ''
+
+    @expected[7] = 'response="32f6ca1631ccf7c42a8075deff44e470"'
+    @expected.slice! 2
+
+    assert_equal expected, @da.auth_header(@uri, @header, 'GET')
+  end
+
   def test_auth_header_opaque
     @expected << 'opaque="5ccc069c403ebaf9f0171e9517f40e41"'
     @header   << 'opaque="5ccc069c403ebaf9f0171e9517f40e41"'
@@ -71,7 +80,7 @@ class TestNetHttpDigestAuth < MiniTest::Unit::TestCase
   end
 
   def test_auth_header_sha1
-    @expected[7] = 'response="2cb62fc18f7b0ebdc34543f896bb77686b4115e4"'
+    @expected[7] = 'response="2cb62fc18f7b0ebdc34543f896bb7768"'
 
     @header << 'algorithm="SHA1"'
 
