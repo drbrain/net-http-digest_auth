@@ -11,7 +11,13 @@ Hoe.spec 'net-http-digest_auth' do
   developer 'Eric Hodel', 'drbrain@segment7.net'
 
   spec_extras['homepage'] =
-    'http://seattlerb.rubyforge.org/net-http-digest_auth'
+    'http://docs.seattlerb.org/net-http-digest_auth'
+
+  rdoc_locations <<
+    'docs.seattlerb.org:/data/www/docs.seattlerb.org/net-http-digest_auth/'
+  rdoc_locations <<
+    'rubyforge.org:/var/www/gforge-projects/seattlerb/net-http-digest_auth/'
+
 end
 
 # vim: syntax=Ruby
