@@ -41,7 +41,7 @@ class Net::HTTP::DigestAuth
   ##
   # Version of Net::HTTP::DigestAuth you are using
 
-  VERSION = '1.0'
+  VERSION = '1.1'
 
   ##
   # Creates a new DigestAuth header creator.
