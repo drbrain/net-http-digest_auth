@@ -17,7 +17,6 @@ Hoe.spec 'net-http-digest_auth' do
     'docs.seattlerb.org:/data/www/docs.seattlerb.org/net-http-digest_auth/'
   rdoc_locations <<
     'rubyforge.org:/var/www/gforge-projects/seattlerb/net-http-digest_auth/'
-
 end
 
 # vim: syntax=Ruby

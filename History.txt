@@ -1,4 +1,9 @@
-=== 1.1
+=== 1.1.1 / 2011-04-03
+
+* Bug fix
+  * Fix syntax error on ruby 1.8
+
+=== 1.1 / 2011-03-29
 
 * Minor enhancements
   * Add support for SHA1, SHA2, SHA256, SHA384, SHA512, RMD160 algorithms
