@@ -1,3 +1,8 @@
+=== 1.2 / 2011-11-22
+
+* Minor enhancement
+  * Now thread safe.  Issue #2 by chrisochs.
+
 === 1.1.1 / 2011-04-03
 
 * Bug fix

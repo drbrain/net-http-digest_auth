@@ -1,6 +1,7 @@
-require 'net/http'
-require 'digest'
 require 'cgi'
+require 'digest'
+require 'net/http'
+require 'monitor'
 
 ##
 # An implementation of RFC 2617 Digest Access Authentication.
@@ -33,6 +34,8 @@ require 'cgi'
 
 class Net::HTTP::DigestAuth
 
+  include MonitorMixin
+
   ##
   # DigestAuth error class
 
@@ -41,7 +44,7 @@ class Net::HTTP::DigestAuth
   ##
   # Version of Net::HTTP::DigestAuth you are using
 
-  VERSION = '1.1.1'
+  VERSION = '1.2'
 
   ##
   # Creates a new DigestAuth header creator.
@@ -50,6 +53,7 @@ class Net::HTTP::DigestAuth
   # secret value.
 
   def initialize cnonce = make_cnonce
+    mon_initialize
     @nonce_count = -1
     @cnonce = cnonce
   end
@@ -69,7 +73,7 @@ class Net::HTTP::DigestAuth
   # differently so you may need to set +iis+ to true for such servers.
 
   def auth_header uri, www_authenticate, method, iis = false
-    @nonce_count += 1
+    nonce_count = next_nonce
 
     user     = CGI.unescape uri.user
     password = CGI.unescape uri.password
@@ -111,7 +115,7 @@ class Net::HTTP::DigestAuth
     ha2 = algorithm.hexdigest "#{method}:#{uri.request_uri}"
 
     request_digest = [ha1, params['nonce']]
-    request_digest.push(('%08x' % @nonce_count), @cnonce, qop) if qop
+    request_digest.push(('%08x' % nonce_count), @cnonce, qop) if qop
     request_digest << ha2
     request_digest = request_digest.join ':'
 
@@ -143,6 +147,12 @@ class Net::HTTP::DigestAuth
 
   def make_cnonce
     Digest::MD5.hexdigest "%x" % (Time.now.to_i + rand(65535))
+  end
+
+  def next_nonce
+    synchronize do
+      @nonce_count += 1
+    end
   end
 
 end
