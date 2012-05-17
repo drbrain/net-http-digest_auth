@@ -19,6 +19,7 @@ class TestNetHttpDigestAuth < MiniTest::Unit::TestCase
     @expected = [
       'Digest username="user"',
       'realm="www.example.com"',
+      'algorithm=MD5',
       'qop=auth',
       'uri="/"',
       'nonce="4107baa081a592a6021660200000cd6c5686ff5f579324402b374d83e2c9"',
@@ -37,14 +38,14 @@ class TestNetHttpDigestAuth < MiniTest::Unit::TestCase
   def test_auth_header
     assert_equal expected, @da.auth_header(@uri, @header, 'GET')
 
-    @expected[5] = 'nc=00000001'
-    @expected[7] = 'response="1f5f0cd1588690c1303737f081c0b9bb"'
+    @expected[6] = 'nc=00000001'
+    @expected[8] = 'response="1f5f0cd1588690c1303737f081c0b9bb"'
 
     assert_equal expected, @da.auth_header(@uri, @header, 'GET')
   end
 
   def test_auth_header_iis
-    @expected[2] = 'qop="auth"'
+    @expected[3] = 'qop="auth"'
 
     assert_equal expected, @da.auth_header(@uri, @header, 'GET', true)
   end
@@ -52,8 +53,8 @@ class TestNetHttpDigestAuth < MiniTest::Unit::TestCase
   def test_auth_header_no_qop
     @header.sub! ' qop="auth",', ''
 
-    @expected[7] = 'response="32f6ca1631ccf7c42a8075deff44e470"'
-    @expected.slice! 2
+    @expected[8] = 'response="32f6ca1631ccf7c42a8075deff44e470"'
+    @expected.slice! 3
 
     assert_equal expected, @da.auth_header(@uri, @header, 'GET')
   end
@@ -66,29 +67,31 @@ class TestNetHttpDigestAuth < MiniTest::Unit::TestCase
   end
 
   def test_auth_header_post
-    @expected[7] = 'response="d82219e1e5430b136bbae1670fa51d48"'
+    @expected[8] = 'response="d82219e1e5430b136bbae1670fa51d48"'
 
     assert_equal expected, @da.auth_header(@uri, @header, 'POST')
   end
 
   def test_auth_header_sess
-    @header << 'algorithm="MD5-sess"'
+    @header << ', algorithm=MD5-sess'
 
-    @expected[7] = 'response="76d3ff10007496cee26c61f9d04c72a8"'
+    @expected[2] = 'algorithm=MD5-sess'
+    @expected[8] = 'response="c22c5bd9112a86ca78ddc1ae772daeeb"'
 
     assert_equal expected, @da.auth_header(@uri, @header, 'GET')
   end
 
   def test_auth_header_sha1
-    @expected[7] = 'response="2cb62fc18f7b0ebdc34543f896bb7768"'
+    @expected[2] = 'algorithm=SHA1'
+    @expected[8] = 'response="2cb62fc18f7b0ebdc34543f896bb7768"'
 
-    @header << 'algorithm="SHA1"'
+    @header << 'algorithm=SHA1'
 
     assert_equal expected, @da.auth_header(@uri, @header, 'GET')
   end
 
   def test_auth_header_unknown_algorithm
-    @header << 'algorithm="bogus"'
+    @header << 'algorithm=bogus'
 
     e = assert_raises Net::HTTP::DigestAuth::Error do
       @da.auth_header @uri, @header, 'GET'

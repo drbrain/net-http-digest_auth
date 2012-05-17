@@ -16,7 +16,6 @@ class AuthServlet < WEBrick::HTTPServlet::AbstractServlet
     config[:Realm] = 'net-http-digest_auth'
     config[:UseOpaque] = false
     config[:AutoReloadUserDB] = false
-    config[:Algorithm] = 'MD5'
 
     passwd_file = Tempfile.new 'net-http-digest_auth'
     passwd_file.close

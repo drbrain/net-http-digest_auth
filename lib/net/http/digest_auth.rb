@@ -44,7 +44,7 @@ class Net::HTTP::DigestAuth
   ##
   # Version of Net::HTTP::DigestAuth you are using
 
-  VERSION = '1.2'
+  VERSION = '1.2.1'
 
   ##
   # Creates a new DigestAuth header creator.
@@ -80,10 +80,14 @@ class Net::HTTP::DigestAuth
 
     www_authenticate =~ /^(\w+) (.*)/
 
-    params = {}
-    $2.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }
+    challenge = $2
 
-    qop = params['qop']
+    params = {}
+    challenge.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }
+
+    challenge =~ /algorithm=(.*?)([, ]|$)/
+
+    params['algorithm'] = $1 || 'MD5'
 
     if params['algorithm'] =~ /(.*?)(-sess)?$/
       algorithm = case $1
@@ -97,19 +101,18 @@ class Net::HTTP::DigestAuth
                   else raise Error, "unknown algorithm \"#{$1}\""
                   end
       sess = $2
-    else
-      algorithm = Digest::MD5
-      sess = false
     end
 
     a1 = if sess then
            [ algorithm.hexdigest("#{user}:#{params['realm']}:#{password}"),
              params['nonce'],
-             params['cnonce']
+             @cnonce,
            ].join ':'
          else
            "#{user}:#{params['realm']}:#{password}"
          end
+
+    qop = params['qop']
 
     ha1 = algorithm.hexdigest a1
     ha2 = algorithm.hexdigest "#{method}:#{uri.request_uri}"
@@ -122,6 +125,7 @@ class Net::HTTP::DigestAuth
     header = [
       "Digest username=\"#{user}\"",
       "realm=\"#{params['realm']}\"",
+      "algorithm=#{params['algorithm']}",
       if qop.nil? then
       elsif iis then
         "qop=\"#{qop}\""

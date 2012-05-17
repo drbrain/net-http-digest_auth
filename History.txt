@@ -1,3 +1,8 @@
+=== 1.2.1
+
+* Bug fix
+  * Fixed -sess authentication.  This also fixes pull request #4 by joe81
+
 === 1.2 / 2011-11-22
 
 * Minor enhancement
