@@ -1,23 +1,18 @@
 = net-http-digest_auth
 
-* http://github.com/drbrain/net-http-digest_auth
-* http://seattlerb.rubyforge.org/net-http-digest_auth
-* http://www.rfc-editor.org/rfc/rfc2617.txt
+code  :: http://github.com/drbrain/net-http-digest_auth
+rdoc  :: http://docs.seattlerb.org/net-http-digest_auth
+other :: http://www.rfc-editor.org/rfc/rfc2617.txt
 
 == DESCRIPTION:
 
 An implementation of RFC 2617 - Digest Access Authentication.  At this time
-the gem does not fully integrate with Net::HTTP and can be used for with other
-HTTP clients.
+the gem does not drop in to Net::HTTP and can be used for with other HTTP
+clients.
 
-== FEATURES/PROBLEMS:
-
-* Implements RFC 2617 for digest authentication
-* Does not fully integrate with Net::HTTP
-
-== SYNOPSIS:
-
-  See Net::HTTP::DigestAuth
+In order to use net-http-digest_auth you'll need to perform some request
+wrangling on your own.  See the class documentation at Net::HTTP::DigestAuth
+for an example.
 
 == INSTALL:
 
@@ -27,7 +22,7 @@ HTTP clients.
 
 (The MIT License)
 
-Copyright (c) 2010 Eric Hodel
+Copyright (c) Eric Hodel
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
