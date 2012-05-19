@@ -103,7 +103,9 @@ class TestNetHttpDigestAuth < MiniTest::Unit::TestCase
   end
 
   def test_make_cnonce
-    assert_match %r%\A[a-f\d]{32}\z%, @da.make_cnonce
+    cnonce = @da.make_cnonce
+    assert_match %r%\A[a-f\d]{32}\z%, cnonce
+    refute_equal cnonce, @da.make_cnonce
   end
 
   def test_next_nonce
