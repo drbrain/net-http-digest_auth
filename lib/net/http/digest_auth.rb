@@ -1,7 +1,8 @@
 require 'cgi'
 require 'digest'
-require 'net/http'
 require 'monitor'
+require 'net/http'
+require 'securerandom'
 
 ##
 # An implementation of RFC 2617 Digest Access Authentication.
@@ -48,7 +49,7 @@ class Net::HTTP::DigestAuth
   ##
   # Version of Net::HTTP::DigestAuth you are using
 
-  VERSION = '1.2.2'
+  VERSION = '1.3'
 
   ##
   # Creates a new DigestAuth header creator.
@@ -155,10 +156,14 @@ class Net::HTTP::DigestAuth
 
   ##
   # Creates a client nonce value that is used across all requests based on the
-  # current time.
+  # current time, process id and a random number
 
   def make_cnonce
-    Digest::MD5.hexdigest "%x" % (Time.now.to_i + rand(65535))
+    Digest::MD5.hexdigest [
+      Time.now.to_i,
+      $$,
+      SecureRandom.random_number(2**32),
+    ].join ':'
   end
 
   def next_nonce
