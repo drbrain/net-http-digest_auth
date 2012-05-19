@@ -54,7 +54,9 @@ class TestNetHttpDigestAuth < MiniTest::Unit::TestCase
     @header.sub! ' qop="auth",', ''
 
     @expected[8] = 'response="32f6ca1631ccf7c42a8075deff44e470"'
-    @expected.slice! 3
+    @expected.delete 'qop=auth'
+    @expected.delete 'cnonce="9ea5ff3bd34554a4165bbdc1df91dcff"'
+    @expected.delete 'nc=00000000'
 
     assert_equal expected, @da.auth_header(@uri, @header, 'GET')
   end

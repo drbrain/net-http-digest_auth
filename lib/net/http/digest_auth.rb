@@ -48,7 +48,7 @@ class Net::HTTP::DigestAuth
   ##
   # Version of Net::HTTP::DigestAuth you are using
 
-  VERSION = '1.2.1'
+  VERSION = '1.2.2'
 
   ##
   # Creates a new DigestAuth header creator.
@@ -138,8 +138,12 @@ class Net::HTTP::DigestAuth
       end,
       "uri=\"#{uri.request_uri}\"",
       "nonce=\"#{params['nonce']}\"",
-      "nc=#{'%08x' % @nonce_count}",
-      "cnonce=\"#{@cnonce}\"",
+      if qop then
+        [
+          "nc=#{'%08x' % @nonce_count}",
+          "cnonce=\"#{@cnonce}\"",
+        ]
+      end,
       "response=\"#{algorithm.hexdigest(request_digest)[0, 32]}\"",
       if params.key? 'opaque' then
         "opaque=\"#{params['opaque']}\""

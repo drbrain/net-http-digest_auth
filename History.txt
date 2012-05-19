@@ -1,4 +1,10 @@
-=== 1.2.1
+=== 1.2.2
+
+* Bug fix
+  * cnonce and nonce-count are no longer sent when qop is missing per RFC 2617
+    section 3.2.2.
+
+=== 1.2.1 / 2012-05-18
 
 * Bug fix
   * Fixed -sess authentication.  This also fixes pull request #4 by joe81
