@@ -1,6 +1,7 @@
 === 1.3
 
-* Minor enhancement
+* Minor enhancements
+  * The cnonce is regenerated for every request to improve security.
   * SecureRandom is used to generate the cnonce instead of Kernel#rand
 * Bug fix
   * cnonce and nonce-count are no longer sent when qop was not provided per

@@ -28,7 +28,11 @@ class TestNetHttpDigestAuth < MiniTest::Unit::TestCase
       'response="67be92a5e7b38d08679957db04f5da04"'
     ]
 
-    @da = Net::HTTP::DigestAuth.new @cnonce
+    @da = Net::HTTP::DigestAuth.new
+
+    def @da.make_cnonce
+      '9ea5ff3bd34554a4165bbdc1df91dcff'
+    end
   end
 
   def expected
@@ -103,9 +107,11 @@ class TestNetHttpDigestAuth < MiniTest::Unit::TestCase
   end
 
   def test_make_cnonce
-    cnonce = @da.make_cnonce
+    da = Net::HTTP::DigestAuth.new
+
+    cnonce = da.make_cnonce
     assert_match %r%\A[a-f\d]{32}\z%, cnonce
-    refute_equal cnonce, @da.make_cnonce
+    refute_equal cnonce, da.make_cnonce
   end
 
   def test_next_nonce

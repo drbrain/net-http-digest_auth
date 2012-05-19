@@ -53,14 +53,10 @@ class Net::HTTP::DigestAuth
 
   ##
   # Creates a new DigestAuth header creator.
-  #
-  # +cnonce+ is the client nonce value.  This should be an MD5 hexdigest of a
-  # secret value.
 
-  def initialize cnonce = make_cnonce
+  def initialize ignored = :ignored
     mon_initialize
     @nonce_count = -1
-    @cnonce = cnonce
   end
 
   ##
@@ -108,22 +104,23 @@ class Net::HTTP::DigestAuth
       sess = $2
     end
 
+    qop = params['qop']
+    cnonce = make_cnonce if qop or sess
+
     a1 = if sess then
            [ algorithm.hexdigest("#{user}:#{params['realm']}:#{password}"),
              params['nonce'],
-             @cnonce,
+             cnonce,
            ].join ':'
          else
            "#{user}:#{params['realm']}:#{password}"
          end
 
-    qop = params['qop']
-
     ha1 = algorithm.hexdigest a1
     ha2 = algorithm.hexdigest "#{method}:#{uri.request_uri}"
 
     request_digest = [ha1, params['nonce']]
-    request_digest.push(('%08x' % nonce_count), @cnonce, qop) if qop
+    request_digest.push(('%08x' % nonce_count), cnonce, qop) if qop
     request_digest << ha2
     request_digest = request_digest.join ':'
 
@@ -142,7 +139,7 @@ class Net::HTTP::DigestAuth
       if qop then
         [
           "nc=#{'%08x' % @nonce_count}",
-          "cnonce=\"#{@cnonce}\"",
+          "cnonce=\"#{cnonce}\"",
         ]
       end,
       "response=\"#{algorithm.hexdigest(request_digest)[0, 32]}\"",
