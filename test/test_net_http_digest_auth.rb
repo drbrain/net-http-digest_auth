@@ -1,7 +1,7 @@
 require 'minitest/autorun'
 require 'net/http/digest_auth'
 
-class TestNetHttpDigestAuth < MiniTest::Unit::TestCase
+class TestNetHttpDigestAuth < MiniTest::Test
 
   def setup
     @uri = URI.parse "http://www.example.com/"
