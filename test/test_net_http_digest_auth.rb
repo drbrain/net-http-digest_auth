@@ -106,6 +106,12 @@ class TestNetHttpDigestAuth < MiniTest::Unit::TestCase
     assert_equal 'unknown algorithm "bogus"', e.message
   end
 
+  def test_auth_header_quoted_algorithm
+    @header << 'algorithm="MD5"'
+
+    assert_equal expected, @da.auth_header(@uri, @header, 'GET')
+  end
+
   def test_make_cnonce
     da = Net::HTTP::DigestAuth.new
 

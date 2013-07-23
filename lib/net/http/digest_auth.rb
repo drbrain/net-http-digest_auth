@@ -86,7 +86,7 @@ class Net::HTTP::DigestAuth
     params = {}
     challenge.gsub(/(\w+)="(.*?)"/) { params[$1] = $2 }
 
-    challenge =~ /algorithm=(.*?)([, ]|$)/
+    challenge =~ /algorithm="?(.*?)"?([, ]|$)/
 
     params['algorithm'] = $1 || 'MD5'
 
