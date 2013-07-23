@@ -1,3 +1,9 @@
+=== 1.4 / 2013-07-23
+
+* Minor enhancements
+  * Relaxed parser to accept quoted algorithm to work with Linksys SPA922.
+    Pull request #8 by Ismail Hanli, Issue #5 by bearded
+
 === 1.3 / 2012-03-28
 
 * Minor enhancements
