@@ -17,6 +17,8 @@ Hoe.spec 'net-http-digest_auth' do
 
   license 'MIT'
 
+  dependency 'minitest', '~> 5.0', :development
+
   self.spec_extras[:required_ruby_version] = '>= 1.8.7'
 end
 
