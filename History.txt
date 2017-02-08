@@ -1,8 +1,10 @@
-=== 1.4.1
+=== 1.4.1 / 2017-02-08
 
 * Bug fix
   * Set license to MIT in spec, matching README.  Issue #9 by Benjamin
     Fleischer
+  * Allow any digest length per RFC 7616 section 3.4.2.  Issue #14 by Joshua
+    Gross.
 
 === 1.4 / 2013-07-23
 
