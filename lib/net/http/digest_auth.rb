@@ -142,7 +142,7 @@ class Net::HTTP::DigestAuth
           "cnonce=\"#{cnonce}\"",
         ]
       end,
-      "response=\"#{algorithm.hexdigest(request_digest)[0, 32]}\"",
+      "response=\"#{algorithm.hexdigest(request_digest)}\"",
       if params.key? 'opaque' then
         "opaque=\"#{params['opaque']}\""
       end
