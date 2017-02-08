@@ -89,7 +89,7 @@ class TestNetHttpDigestAuth < Minitest::Test
 
   def test_auth_header_sha1
     @expected[2] = 'algorithm=SHA1'
-    @expected[8] = 'response="2cb62fc18f7b0ebdc34543f896bb7768"'
+    @expected[8] = 'response="2cb62fc18f7b0ebdc34543f896bb77686b4115e4"'
 
     @header << 'algorithm=SHA1'
 
